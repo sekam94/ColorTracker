@@ -13,7 +13,7 @@ namespace Tests
 
 		public BitmapPixelsUnitTest()
 		{
-			bitmap = new Bitmap(3, 2, PixelFormat.Format24bppRgb);
+			bitmap = new Bitmap(3, 2, PixelFormat.Format32bppArgb);
 
 			bitmap.SetPixel(0, 0, Color.White);
 			bitmap.SetPixel(1, 0, Color.Gray);
@@ -22,8 +22,7 @@ namespace Tests
 			bitmap.SetPixel(1, 1, Color.Green);
 			bitmap.SetPixel(2, 0, Color.Blue);
 
-
-			clone = bitmap.Clone(new Rectangle(0, 0, bitmap.Width, bitmap.Height), bitmap.PixelFormat);
+			clone = new Bitmap(bitmap);
 		}
 
 		[TestMethod]

@@ -48,7 +48,7 @@ namespace ColorTrackerLib
 		private void NewFrame(Frame frame)
 		{
 #if DEBUG
-						UpdateFrame(frame);
+			UpdateFrame(frame);
 #else
 			ThreadPool.QueueUserWorkItem(UpdateFrame, frame);
 #endif

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
@@ -9,7 +10,7 @@ namespace ColorTrackerLib
 	{
 		public List<MarkerSettings> MarkerSettings { get; }
 
-		private const int RES_MAGN = 2; // во сколько раз уменьшать разрешение
+		private const int RES_MAGN = 4; // во сколько раз уменьшать разрешение
 		private const float MIN_S = 0.2f;
 		private const float MIN_V = 0.2f;
 		private const int EPSILON = 10; //окрестность 10
@@ -22,6 +23,7 @@ namespace ColorTrackerLib
 
 		private void DrawDebug(Frame frame, Dictionary<MarkerSettings, List<Point>> points)
 		{
+			frame.Bitmap = new Bitmap(frame.Bitmap);
 			using (var pixels = new ColorTrackerLibCpp.BitmapPixels(frame.Bitmap))
 				foreach (KeyValuePair<MarkerSettings, List<Point>> pair in points)
 				{
@@ -39,53 +41,40 @@ namespace ColorTrackerLib
 		{
 			if (MarkerSettings.Count == 0)
 				return new List<Marker>();
-
+			
 			Bitmap copy = new Bitmap(frame.Bitmap, frame.Bitmap.Width / RES_MAGN, frame.Bitmap.Height / RES_MAGN);
 			Hsv[,] hsvImage;
 
 			using (var pixels = new ColorTrackerLibCpp.BitmapPixels(copy))
-			{
-				//hsvImage = ConvertToHsvParallel(pixels);
+				hsvImage = ConvertToHsvParallel(pixels);
 
-				for (int x = 0; x < copy.Width/2; x++)
-					for (int y = 0; y < copy.Height; y++)
-					{
-						//Hsv hsv = hsvImage[x, y];
-						//hsv.V = 1;
-						//pixels.SetPixel(x, y, Hsv.ToColor(hsv));
-
-						Color c = pixels.GetPixel(x, y);
-						pixels.SetPixel(x,y, pixels.GetPixel(pixels.Width - x, y));
-						pixels.SetPixel(pixels.Width - x, y, c);
-					}
-			}
-
-
-			frame.Bitmap = copy;
-
-			//Dictionary <MarkerSettings, List<Point>> points = FindPoints(hsvImage);
-			//DrawDebug(frame, points);
-			//List<Marker> markers = FormMarkers(points);
-			//return markers;
-
-			return new List<Marker>();
+			Dictionary<MarkerSettings, List<Point>> points = FindPoints(hsvImage);
+			DrawDebug(frame, points);
+			List<Marker> markers = FormMarkers(points);
+			return markers;
 		}
 
 		private Hsv[,] ConvertToHsvParallel(ColorTrackerLibCpp.BitmapPixels pixels)
 		{
 			Hsv[,] image = new Hsv[pixels.Width, pixels.Height];
-
-			var cpus = Environment.ProcessorCount;
-			var len = pixels.Width / cpus;
-
-			Parallel.For(0, cpus, delegate (int i)
+			
+			var len = pixels.Width / Environment.ProcessorCount;
+			Parallel.ForEach(Partitioner.Create(0, pixels.Width, len), range =>
 			{
-				for (int x = len * i; x < len * (i + 1) && x < pixels.Width; x++)
-					for (int y = 0; y < pixels.Height; y++)
-					{
-						var pixel = pixels.GetPixel(x, y);
-						image[x, y] = Hsv.FromColor(pixel);
-					};
+				try
+				{
+					for (int x = range.Item1; x < range.Item2; x++)
+						for (int y = 0; y < pixels.Height; y++)
+						{
+							var pixel = pixels.GetPixel(x, y);
+							image[x, y] = Hsv.FromColor(pixel);
+						};
+				}
+				catch (Exception e)
+				{
+					
+					throw;
+				}
 			});
 
 			return image;
@@ -93,10 +82,9 @@ namespace ColorTrackerLib
 
 		private Dictionary<MarkerSettings, List<Point>> FindPoints(Hsv[,] image)
 		{
-			//TODO: сделать через массив
-			Dictionary<MarkerSettings, List<Point>> pointsC = new Dictionary<MarkerSettings, List<Point>>();
+			Dictionary<MarkerSettings, List<Point>> points = new Dictionary<MarkerSettings, List<Point>>();
 			foreach (MarkerSettings settings in MarkerSettings)
-				pointsC[settings] = new List<Point>();
+				points[settings] = new List<Point>();
 
 			for (int x = 0; x < image.GetLength(0); x++)
 				for (int y = 0; y < image.GetLength(1); y++)
@@ -112,10 +100,10 @@ namespace ColorTrackerLib
 								hsv.S < settings.MaxS &&
 								(difH < settings.MaxDifH ||
 								 difH > 360 - settings.MaxDifH))
-								pointsC[settings].Add(new Point(x * RES_MAGN, y * RES_MAGN));
+								points[settings].Add(new Point(x * RES_MAGN, y * RES_MAGN));
 						}
 				}
-			return pointsC;
+			return points;
 		}
 
 		private List<Marker> FormMarkers(Dictionary<MarkerSettings, List<Point>> points)

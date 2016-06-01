@@ -20,15 +20,15 @@ namespace ColorTrackerLibCpp
 		{
 			if (!PosMatches(x, y))
 				throw gcnew ArgumentOutOfRangeException();
-
-
-			return _imagePointer + (_bmData->Stride * y + x * 3);
+			auto offset = y * _bmData->Stride + x * 4;
+			return _imagePointer + offset;
 		}
+
 	public:
 		BitmapPixels(Bitmap^ bitmap)
 		{
-			if (bitmap->PixelFormat != PixelFormat::Format24bppRgb)
-				throw gcnew FormatException("Pixel format is not 24bppRgb");
+			if (bitmap->PixelFormat != PixelFormat::Format32bppArgb)
+				throw gcnew FormatException("Pixel format is not 32bppArgb");
 
 			_locked = true;
 			_bitmap = bitmap;
@@ -50,17 +50,19 @@ namespace ColorTrackerLibCpp
 		{
 			auto pixelPtr = GetPixelPtr(x, y);
 
+			auto a = *(pixelPtr + 3);
 			auto r = *(pixelPtr + 2);
 			auto g = *(pixelPtr + 1);
 			auto b = *(pixelPtr);
 
-			return Color::FromArgb(r, g, b);
+			return Color::FromArgb(a, r, g, b);
 		}
 
 		void SetPixel(int x, int y, Color color)
 		{
 			auto pixelPtr = GetPixelPtr(x, y);
 
+			*(pixelPtr + 3) = color.A;
 			*(pixelPtr + 2) = color.R;
 			*(pixelPtr + 1) = color.G;
 			*(pixelPtr) = color.B;

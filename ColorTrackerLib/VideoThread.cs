@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Threading;
 using ColorTrackerLib.Device;
 using DirectShowLib;
 
@@ -168,23 +169,34 @@ namespace ColorTrackerLib
 			return 0;
 		}
 
+		private bool _locked = false;
 		int ISampleGrabberCB.BufferCB(double sampleTime, IntPtr buffer, int bufferLen)
 		{
-			if (NewFrameCallback != null)
+			if (NewFrameCallback != null && !_locked)
 			{
 				NewFrameCallBack buf = NewFrameCallback;
-
-				Bitmap bitmap = new Bitmap(ImageWidth, ImageHeight, PixelFormat.Format24bppRgb);
-				BitmapData bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
-				CopyMemory(bmData.Scan0, buffer, (uint)bufferLen);
-				bitmap.UnlockBits(bmData);
-
-				bitmap.RotateFlip(RotateFlipType.RotateNoneFlipXY);
-
-				buf(new Frame(bitmap, sampleTime));
+				
+				ThreadPool.QueueUserWorkItem(delegate
+				{
+					_locked = true;
+					buf(new Frame(CreateBitmap(buffer, bufferLen), sampleTime));
+					_locked = false;
+				}); 	
 			}
 
 			return 0;
+		}
+
+		private Bitmap CreateBitmap(IntPtr buffer, int bufferLen)
+		{
+			Bitmap bitmap = new Bitmap(ImageWidth, ImageHeight, PixelFormat.Format24bppRgb);
+			BitmapData bmData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+			CopyMemory(bmData.Scan0, buffer, (uint)bufferLen);
+			bitmap.UnlockBits(bmData);
+
+			bitmap.RotateFlip(RotateFlipType.RotateNoneFlipXY);
+
+			return bitmap;
 		}
 
 		~VideoThread()
