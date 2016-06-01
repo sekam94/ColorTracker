@@ -10,22 +10,32 @@ namespace ColorTrackerLibCpp
 	{
 		int _height;
 		int _width;
-		int _length;
 		bool _locked;
 
 		Bitmap^ _bitmap;
 		BitmapData^ _bmData;
-		char* _imagePointer;
+		unsigned char* _imagePointer;
+
+		unsigned char* GetPixelPtr(int x, int y)
+		{
+			if (!PosMatches(x, y))
+				throw gcnew ArgumentOutOfRangeException();
+
+
+			return _imagePointer + (_bmData->Stride * y + x * 3);
+		}
 	public:
 		BitmapPixels(Bitmap^ bitmap)
 		{
+			if (bitmap->PixelFormat != PixelFormat::Format24bppRgb)
+				throw gcnew FormatException("Pixel format is not 24bppRgb");
+
 			_locked = true;
 			_bitmap = bitmap;
 			_height = bitmap->Height;
 			_width = bitmap->Width;
-			_length = _height * _width;
 			_bmData = bitmap->LockBits(Rectangle(0, 0, _width, _height), ImageLockMode::ReadWrite, bitmap->PixelFormat);
-			_imagePointer = (char*)_bmData->Scan0.ToPointer();
+			_imagePointer = (unsigned char*)_bmData->Scan0.ToPointer();
 		}
 
 		bool PosMatches(int x, int y)
@@ -36,47 +46,24 @@ namespace ColorTrackerLibCpp
 				y < _height;
 		}
 
-		Color GetPixel(int index)
-		{
-			if (index < 0 || index >= _length)
-				throw gcnew	ArgumentOutOfRangeException;
-
-			char* pixelPtr = _imagePointer + (index * 3);
-
-			return Color::FromArgb(
-				(unsigned char)*(pixelPtr + 2),
-				(unsigned char)*(pixelPtr + 1),
-				(unsigned char)*(pixelPtr));
-		}
-
 		Color GetPixel(int x, int y)
 		{
-			if (!PosMatches(x, y))
-				throw gcnew ArgumentOutOfRangeException();
+			auto pixelPtr = GetPixelPtr(x, y);
 
-			int pos = _width * y + x;
-			return GetPixel(pos);
-		}
+			auto r = *(pixelPtr + 2);
+			auto g = *(pixelPtr + 1);
+			auto b = *(pixelPtr);
 
-		void SetPixel(int index, Color color)
-		{
-			if (index < 0 || index >= _length)
-				throw gcnew	ArgumentOutOfRangeException;
-
-			char* pixelPtr = _imagePointer + index * 3;
-
-			*(pixelPtr + 2) = color.R;
-			*(pixelPtr + 1) = color.G;
-			*(pixelPtr) = color.B;
+			return Color::FromArgb(r, g, b);
 		}
 
 		void SetPixel(int x, int y, Color color)
 		{
-			if (!PosMatches(x, y))
-				throw gcnew ArgumentOutOfRangeException();
+			auto pixelPtr = GetPixelPtr(x, y);
 
-			int pos = _width * y + x;
-			SetPixel(pos, color);
+			*(pixelPtr + 2) = color.R;
+			*(pixelPtr + 1) = color.G;
+			*(pixelPtr) = color.B;
 		}
 
 		~BitmapPixels()
@@ -93,24 +80,6 @@ namespace ColorTrackerLibCpp
 		property int Height
 		{
 			int get() { return _height; }
-		}
-
-		property int Length
-		{
-			int get() { return _length; }
-		}
-
-		property Color default[int]
-		{
-			Color get(int index)
-			{
-				return GetPixel(index);
-			}
-
-			void set(int index, Color value)
-			{
-				SetPixel(index, value);
-			}
 		}
 	};
 }
