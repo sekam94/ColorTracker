@@ -41,7 +41,7 @@ namespace ColorTrackerLib
 		{
 			if (MarkerSettings.Count == 0)
 				return new List<Marker>();
-			
+
 			Bitmap copy = new Bitmap(frame.Bitmap, frame.Bitmap.Width / RES_MAGN, frame.Bitmap.Height / RES_MAGN);
 			Hsv[,] hsvImage;
 
@@ -58,23 +58,14 @@ namespace ColorTrackerLib
 		{
 			Hsv[,] image = new Hsv[pixels.Width, pixels.Height];
 			
-			var len = pixels.Width / Environment.ProcessorCount;
-			Parallel.ForEach(Partitioner.Create(0, pixels.Width, len), range =>
+			Parallel.ForEach(Partitioner.Create(0, pixels.Width, pixels.Width / Environment.ProcessorCount), range =>
 			{
-				try
-				{
-					for (int x = range.Item1; x < range.Item2; x++)
-						for (int y = 0; y < pixels.Height; y++)
-						{
-							var pixel = pixels.GetPixel(x, y);
-							image[x, y] = Hsv.FromColor(pixel);
-						};
-				}
-				catch (Exception e)
-				{
-					
-					throw;
-				}
+				for (int x = range.Item1; x < range.Item2; x++)
+					for (int y = 0; y < pixels.Height; y++)
+					{
+						var pixel = pixels.GetPixel(x, y);
+						image[x, y] = Hsv.FromColor(pixel);
+					};
 			});
 
 			return image;
