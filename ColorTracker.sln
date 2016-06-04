@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{ACE1CA95-0CDB-4CB8-91D8-4BA104A2525E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gui", "Test\Gui.csproj", "{ACE1CA95-0CDB-4CB8-91D8-4BA104A2525E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorTrackerLib", "ColorTrackerLib\ColorTrackerLib.csproj", "{23FFDE2B-2CE4-4615-9A46-E8418C9A7A92}"
 EndProject

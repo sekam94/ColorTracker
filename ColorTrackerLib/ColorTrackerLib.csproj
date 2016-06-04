@@ -52,6 +52,8 @@
     <Compile Include="Capture.cs" />
     <Compile Include="MarkerSettings.cs" />
     <Compile Include="Scanner.cs" />
+    <Compile Include="TouchEmulator.cs" />
+    <Compile Include="TouchInjection.cs" />
     <Compile Include="VideoThread.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

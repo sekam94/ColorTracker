@@ -9,7 +9,6 @@ namespace Tests
 	public class BitmapPixelsUnitTest
 	{
 		private Bitmap bitmap;
-		private Bitmap clone;
 
 		public BitmapPixelsUnitTest()
 		{
@@ -21,14 +20,12 @@ namespace Tests
 			bitmap.SetPixel(0, 1, Color.Red);
 			bitmap.SetPixel(1, 1, Color.Green);
 			bitmap.SetPixel(2, 0, Color.Blue);
-
-			clone = new Bitmap(bitmap);
 		}
 
 		[TestMethod]
 		public void Reading()
 		{
-			using (var bitmapPixels = new BitmapPixels(clone))
+			using (var bitmapPixels = new BitmapPixels(new Bitmap(bitmap)))
 				for (int i = 0; i < bitmap.Width; i++)
 					for (int j = 0; j < bitmap.Height; j++)
 						Assert.AreEqual(bitmap.GetPixel(i, j), bitmapPixels.GetPixel(i, j));
@@ -37,7 +34,7 @@ namespace Tests
 		[TestMethod]
 		public void Writing()
 		{
-			using (var bitmapPixels = new BitmapPixels(clone))
+			using (var bitmapPixels = new BitmapPixels(new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format32bppArgb)))
 				for (int i = 0; i < bitmap.Width; i++)
 					for (int j = 0; j < bitmap.Height; j++)
 					{
