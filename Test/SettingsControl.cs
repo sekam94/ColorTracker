@@ -16,6 +16,11 @@ namespace Test
 		private List<MarkerSettings> _markerSettings;
 		private Settings _currentSettings;
 
+		public SettingsControl()
+		{
+			
+		}
+
 		public SettingsControl(Capture capture, bool editable)
 		{
 			InitializeComponent();

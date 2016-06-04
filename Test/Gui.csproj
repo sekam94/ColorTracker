@@ -64,11 +64,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Drawing.cs" />
-    <Compile Include="MainForm.cs">
+    <Compile Include="ColorTracker.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <Compile Include="ColorTracker.Designer.cs">
+      <DependentUpon>ColorTracker.cs</DependentUpon>
     </Compile>
     <Compile Include="SettingsControl.cs">
       <SubType>UserControl</SubType>
@@ -78,8 +78,8 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="MainForm.resx">
-      <DependentUpon>MainForm.cs</DependentUpon>
+    <EmbeddedResource Include="ColorTracker.resx">
+      <DependentUpon>ColorTracker.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SettingsControl.resx">
       <DependentUpon>SettingsControl.cs</DependentUpon>

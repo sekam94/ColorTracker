@@ -50,7 +50,6 @@ namespace Tests
 				emulator.Right.Contact = true;
 				Thread.Sleep(150);
 				emulator.Right.Contact = false;
-				//Thread.Sleep(150);
 				emulator.Right.Enabled = false;
 				Thread.Sleep(150);
 
@@ -76,7 +75,6 @@ namespace Tests
 						X = p.X + (int)(Math.Cos(i) * 100),
 						Y = p.Y + (int)(Math.Sin(i) * 100)
 					};
-
 					Thread.Sleep(100);
 				}
 
