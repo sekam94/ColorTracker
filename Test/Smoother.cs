@@ -1,5 +1,4 @@
-﻿using System.CodeDom;
-using System.Drawing;
+﻿using System.Drawing;
 using ColorTrackerLib;
 
 namespace Test
@@ -7,7 +6,7 @@ namespace Test
 	public class Smoother : ISmoother
 	{
 		private const float Alpha = 0.8f;
-		private const float StayRadius = 20f;
+		private const float StayRadius = 0f;
 
 		private readonly ExpSmoother _expSmoother = new ExpSmoother(Alpha);
 

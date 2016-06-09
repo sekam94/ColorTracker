@@ -92,7 +92,7 @@ namespace Test
 			Controls.Add(settingsControl);
 
 			_timer.Start();
-			_touchEmulator.Run();
+			//_touchEmulator.Run();
 			_cap.Run();
 		}
 
@@ -113,8 +113,8 @@ namespace Test
 
 		private void UpdateImage(NewFrameEventArgs e)
 		{
-			if (!_touchEmulator.IsRunning)
-				throw new Exception("Emulator is not working");
+			//if (!_touchEmulator.IsRunning)
+			//	throw new Exception("Emulator is not working");
 
 			_timer.Stop();
 
@@ -139,6 +139,8 @@ namespace Test
 				GetMarkerCluster(_left.MarkerASettings, markers),
 				GetMarkerCluster(_left.MarkerBSettings, markers),
 				леваяРукаToolStripMenuItem.Checked);
+
+			_touchEmulator.Update();
 		}
 
 		private Cluster GetMarkerCluster(MarkerSettings settings, Dictionary<MarkerSettings, List<Cluster>> markers)
@@ -151,6 +153,8 @@ namespace Test
 			return null;
 		}
 
+		private const float RectangleScale = 0.1f;
+
 		private void UpdatePointer(TouchEmulator.Pointer pointer, ISmoother smoother, Cluster clusterA, Cluster clusterB, bool enabled)
 		{ 
 			lock (pointer)
@@ -159,11 +163,10 @@ namespace Test
 					var rectA = clusterA.Borders;
 					var rectB = clusterB.Borders;
 
-					rectA.Inflate(10, 10);
-					rectB.Inflate(10, 10);
+					rectA.Inflate((int)(rectA.Size.Height * RectangleScale), (int)(rectA.Size.Width * RectangleScale));
+					rectB.Inflate((int)(rectB.Size.Height * RectangleScale), (int)(rectB.Size.Width * RectangleScale));
 
 					pointer.Point = smoother.SmoothPoint(_resolutionAdapter.AdaptPoint(MiddlePoint(clusterA.Center, clusterA.Center)));
-					//pointer.Contact = pointA.Value.DistanceTo(pointB.Value) < DISTANCE_TRASHOLD;
 					pointer.Contact = rectA.IntersectsWith(rectB);
 					pointer.Enabled = true;
 				}
