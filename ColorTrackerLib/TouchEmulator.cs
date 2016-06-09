@@ -50,7 +50,7 @@ namespace ColorTrackerLib
 			if (!IsRunning)
 				throw new Exception("Not running");
 
-			IsRunning = false;
+			_stop = false;
 		}
 
 		private void EmulationCycle()
@@ -87,13 +87,13 @@ namespace ColorTrackerLib
 			if (_left.Pointer.Enabled || _left.Injected)
 			{
 				pointers[num++] = GetPointerTouchInfo(_left);
-				Trace.WriteLine($"Left: {_left.LastFlags}");
+				Trace.WriteLine($"Left: {pointers[num-1].PointerInfo.PointerFlags}");
 			}
 
 			if (_right.Pointer.Enabled || _right.Injected)
 			{
 				pointers[num++] = GetPointerTouchInfo(_right);
-				Trace.WriteLine($"Right: {_right.LastFlags}");
+				Trace.WriteLine($"Right: {pointers[num - 1].PointerInfo.PointerFlags}");
 			}
 
 			if (num > 0)
@@ -102,14 +102,15 @@ namespace ColorTrackerLib
 
 		private PointerTouchInfo GetPointerTouchInfo(PointerState state)
 		{
-			lock ((object)state.Pointer.Point)
-				return new PointerTouchInfo
+			lock ((object) state.Pointer.Point)
+			{
+				PointerTouchInfo pti = new PointerTouchInfo
 				{
-					PointerInfo =
+					PointerInfo = 
 					{
 						PointerId = state.Id,
 						PointerType = PointerInputType.TOUCH,
-						PointerFlags = state.LastFlags = CountPointerFlags(state),
+						PointerFlags = CountPointerFlags(state),
 						PtPixelLocation =
 						{
 							X = state.Pointer.Point.X,
@@ -117,6 +118,18 @@ namespace ColorTrackerLib
 						}
 					}
 				};
+
+				if (pti.PointerInfo.PointerFlags == (PointerFlags.INRANGE | PointerFlags.UP))
+					pti.PointerInfo.PtPixelLocation = new TouchPoint
+					{
+						X = state.LastPoint.X,
+						Y = state.LastPoint.Y
+					};
+				else
+					state.LastPoint = state.Pointer.Point;
+
+				return pti;
+			}
 		}
 
 		private PointerFlags CountPointerFlags(PointerState state)
@@ -152,6 +165,8 @@ namespace ColorTrackerLib
 
 		public class Pointer
 		{
+			private static Rectangle Bounds => Screen.PrimaryScreen.Bounds;
+
 			private Point _point;
 
 			public Point Point
@@ -159,8 +174,22 @@ namespace ColorTrackerLib
 				get { return _point; }
 				set
 				{
-					if (!Screen.PrimaryScreen.Bounds.Contains(value))
-						throw new ArgumentOutOfRangeException();
+					if (!Bounds.Contains(value))
+					{
+						int x = value.X;
+						int y = value.Y;
+
+						if (x < 0)
+							x = 0;
+						if (x >= Bounds.Width)
+							x = Bounds.Width - 1;
+						if (y < 0)
+							y = 0;
+						if (y >= Bounds.Height)
+							y = Bounds.Height - 1;
+
+						value = new Point(x,y);
+					}
 					lock ((object) _point)
 						_point = value;
 				}
@@ -172,21 +201,6 @@ namespace ColorTrackerLib
 			public Pointer()
 			{
 				Point = Screen.PrimaryScreen.Bounds.Location;
-			}
-		}
-
-		private class PointerState
-		{
-			public Pointer Pointer { get; }
-			public bool Injected { get; set; }
-			public bool IsInContact { get; set; }
-			public uint Id { get; }
-			public PointerFlags LastFlags { get; set; }
-
-			public PointerState(Pointer p, uint id)
-			{
-				Pointer = p;
-				Id = id;
 			}
 		}
 		
@@ -206,5 +220,20 @@ namespace ColorTrackerLib
 					throw new Win32Exception(error);
 			}
 		}
+
+	private class PointerState
+	{
+		public Pointer Pointer { get; }
+		public Point LastPoint { get; set; }
+		public bool Injected { get; set; }
+		public bool IsInContact { get; set; }
+		public uint Id { get; }
+
+		public PointerState(Pointer p, uint id)
+		{
+			Pointer = p;
+			Id = id;
+		}
 	}
+}
 }

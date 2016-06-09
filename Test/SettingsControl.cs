@@ -11,15 +11,10 @@ namespace Test
 {
 	public partial class SettingsControl : UserControl
 	{
-		public ObservableCollection<Settings> SettingsList { get; private set; }
+		public ObservableCollection<SettingsWrapper> SettingsList { get; }
 
 		private List<MarkerSettings> _markerSettings;
-		private Settings _currentSettings;
-
-		public SettingsControl()
-		{
-			
-		}
+		private SettingsWrapper _currentSettingsWrapper;
 
 		public SettingsControl(Capture capture, bool editable)
 		{
@@ -33,7 +28,7 @@ namespace Test
 			}
 
 			_markerSettings = capture.Scanner.MarkerSettings;
-			SettingsList = new ObservableCollection<Settings>();
+			SettingsList = new ObservableCollection<SettingsWrapper>();
 			SettingsList.CollectionChanged += SettingsList_CollectionChanged;
 		}
 
@@ -42,23 +37,23 @@ namespace Test
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					foreach (Settings settings in e.NewItems)
+					foreach (SettingsWrapper settings in e.NewItems)
 					{
 						DataGridViewRow newRow = new DataGridViewRow();
 						newRow.CreateCells(dataGridView1);
 						newRow.Cells[0].Value = settings.Name;
 						dataGridView1.Rows.Add(newRow);
-						_markerSettings.Add(settings.Marker);
+						_markerSettings.Add(settings.Settings);
 					}
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					foreach (Settings settings in e.OldItems)
+					foreach (SettingsWrapper settings in e.OldItems)
 					{
 						for (int i = 0; i < dataGridView1.Rows.Count; i++)
 							if (settings.Name == dataGridView1.Rows[i].Cells[0].Value.ToString())
 							{
 								dataGridView1.Rows.RemoveAt(i);
-								_markerSettings.Remove(settings.Marker);
+								_markerSettings.Remove(settings.Settings);
 								break;
 							}
 					}
@@ -77,39 +72,27 @@ namespace Test
 
 		private void trackBar1_ValueChanged(object sender, EventArgs e)
 		{
+			_currentSettingsWrapper.Settings.AverageH = trackBar1.Value;
 			trackBar1.BackColor = Hsv.ToColor(new Hsv(trackBar1.Value, 1, 1));
-			label6.Text = trackBar1.Value.ToString();
-
-			if (_currentSettings != null)
-				_currentSettings.Marker.AverageH = trackBar1.Value;
+			label6.Text = _currentSettingsWrapper.Settings.AverageH.ToString();
 		}
 
 		private void trackBar2_ValueChanged(object sender, EventArgs e)
 		{
-			label7.Text = trackBar2.Value.ToString();
-
-			if (_currentSettings != null)
-				_currentSettings.Marker.MaxDifH = trackBar2.Value;
+			_currentSettingsWrapper.Settings.MaxDifH = trackBar2.Value;
+			label7.Text = _currentSettingsWrapper.Settings.MaxDifH.ToString();
 		}
 
 		private void trackBar3_ValueChanged(object sender, EventArgs e)
 		{
-			if (trackBar3.Value > trackBar4.Value)
-				trackBar3.Value = trackBar4.Value;
-			label8.Text = trackBar3.Value.ToString();
-
-			if (_currentSettings != null)
-				_currentSettings.Marker.MinS = trackBar3.Value / 100f;
+			_currentSettingsWrapper.Settings.MinS = trackBar3.Value / 100f;
+			label8.Text = _currentSettingsWrapper.Settings.MinS.ToString();
 		}
 
 		private void trackBar4_ValueChanged(object sender, EventArgs e)
 		{
-			if (trackBar3.Value > trackBar4.Value)
-				trackBar4.Value = trackBar3.Value;
-			label9.Text = trackBar4.Value.ToString();
-
-			if (_currentSettings != null)
-				_currentSettings.Marker.MaxS = trackBar4.Value / 100f;
+			_currentSettingsWrapper.Settings.MaxS = trackBar4.Value / 100f;
+			label9.Text = _currentSettingsWrapper.Settings.MaxS.ToString();
 		}
 
         private void button1_Click(object sender, EventArgs e)
@@ -121,14 +104,14 @@ namespace Test
                 if (item.Cells[0].Value.ToString() == textBox1.Text)
                     return;
 
-			Settings newSettings = new Settings(textBox1.Text);
-			SettingsList.Add(newSettings);
-			_markerSettings.Add(newSettings.Marker);
+			SettingsWrapper newSettingsWrapper = new SettingsWrapper(textBox1.Text, new MarkerSettings());
+			SettingsList.Add(newSettingsWrapper);
+			_markerSettings.Add(newSettingsWrapper.Settings);
 
 
 			DataGridViewRow newRow = new DataGridViewRow();
 			newRow.CreateCells(dataGridView1);
-			newRow.Cells[0].Value = newSettings.Name;
+			newRow.Cells[0].Value = newSettingsWrapper.Name;
 
 			dataGridView1.Rows.Add(newRow);
 
@@ -149,19 +132,19 @@ namespace Test
 	        {
 		        String name = dataGridView1.Rows[dataGridView1.CurrentCell.RowIndex].Cells[0].Value.ToString();
 
-				foreach (Settings settings in SettingsList)
+				foreach (SettingsWrapper settings in SettingsList)
 			        if (settings.Name == name)
 			        {
-				        _currentSettings = settings;
+				        _currentSettingsWrapper = settings;
 				        break;
 			        }
 
-				trackBar1.Value = (int)_currentSettings.Marker.AverageH;
+				trackBar1.Value = (int)_currentSettingsWrapper.Settings.AverageH;
 		        trackBar1_ValueChanged(this, e);
 
-				trackBar2.Value = (int)_currentSettings.Marker.MaxDifH;
-				trackBar3.Value = (int)(_currentSettings.Marker.MinS * 100);
-				trackBar4.Value = (int)(_currentSettings.Marker.MaxS * 100);
+				trackBar2.Value = (int)_currentSettingsWrapper.Settings.MaxDifH;
+				trackBar3.Value = (int)(_currentSettingsWrapper.Settings.MinS * 100);
+				trackBar4.Value = (int)(_currentSettingsWrapper.Settings.MaxS * 100);
 
 				trackBar1.Enabled = true;
 				trackBar2.Enabled = true;
@@ -186,31 +169,31 @@ namespace Test
 
 			String name = dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
 
-			Settings settingsToDelete = null;
+			SettingsWrapper settingsWrapperToDelete = null;
 
-			foreach (Settings settings in SettingsList)
+			foreach (SettingsWrapper settings in SettingsList)
 				if (settings.Name == name)
 				{
-					settingsToDelete = settings;
+					settingsWrapperToDelete = settings;
 					break;
 				}
 
-			if (_currentSettings == settingsToDelete)
-				_currentSettings = null;
+			if (_currentSettingsWrapper == settingsWrapperToDelete)
+				_currentSettingsWrapper = null;
 
-			SettingsList.Remove(settingsToDelete);
+			SettingsList.Remove(settingsWrapperToDelete);
 
 		}
 
-		public sealed class Settings
+		public sealed class SettingsWrapper
 		{
-			public String Name { get; private set; }
-			public MarkerSettings Marker { get; private set; }
+			public String Name { get; }
+			public MarkerSettings Settings { get; }
 
-			public Settings(String name)
+			public SettingsWrapper(String name, MarkerSettings markerSettings)
 			{
 				Name = name;
-				Marker = new MarkerSettings();
+				Settings = markerSettings;
 			}
 		}
 	}

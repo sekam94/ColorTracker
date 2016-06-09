@@ -18,8 +18,5 @@
     <ClCompile Include="BitmapPixels.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TouchEmulator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

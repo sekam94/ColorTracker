@@ -46,20 +46,20 @@ namespace ColorTrackerLib
 			set
 			{
 				_minS = value;
+				
 				if (_minS < 0)
 					_minS = 0;
+
 				if (_minS > 1f)
 					_minS = 1f;
 			}
 		}
 
 		private float _maxS;
+
 		public float MaxS
 		{
-			get
-			{
-				return _maxS;
-			}
+			get { return _maxS; }
 			set
 			{
 				_maxS = value;
@@ -67,8 +67,16 @@ namespace ColorTrackerLib
 					_maxS = 0;
 				if (_maxS > 1f)
 					_maxS = 1f;
-				
+
 			}
+		}
+
+		public MarkerSettings()
+		{
+			_averageH = 0;
+			_maxDifH = 0;
+			_minS = 0;
+			_maxS = 1;
 		}
 	}
 }

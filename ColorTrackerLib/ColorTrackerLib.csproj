@@ -46,11 +46,15 @@
   <ItemGroup>
     <Compile Include="Cluster.cs" />
     <Compile Include="Dbscan.cs" />
+    <Compile Include="ExpSmoother.cs" />
     <Compile Include="Frame.cs" />
     <Compile Include="Hsv.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Capture.cs" />
+    <Compile Include="ISmoother.cs" />
     <Compile Include="MarkerSettings.cs" />
+    <Compile Include="PointOperations.cs" />
+    <Compile Include="ResolutionAdapter.cs" />
     <Compile Include="Scanner.cs" />
     <Compile Include="TouchEmulator.cs" />
     <Compile Include="TouchInjection.cs" />

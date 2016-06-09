@@ -6,7 +6,7 @@ using ColorTrackerLib.Device;
 
 namespace ColorTrackerLib
 {
-	public sealed class Capture
+	public sealed class Capture : IDisposable
 	{
 		public bool Running
 		{
@@ -79,18 +79,22 @@ namespace ColorTrackerLib
 			_videoThread.Stop();
 		}
 
+		public void Dispose()
+		{
+			_videoThread.Dispose();
+		}
 	}
 
 	public sealed class NewFrameEventArgs : EventArgs
 	{
 		public Bitmap Frame { get; private set; }
-		public ICollection<Marker> Markers { get; private set; }
+		public Dictionary<MarkerSettings, List<Cluster>> Clusters { get; private set; }
 		public double Time { get; private set; }
 
-		internal NewFrameEventArgs(Bitmap frame, double time, ICollection<Marker> markers)
+		internal NewFrameEventArgs(Bitmap frame, double time, Dictionary<MarkerSettings, List<Cluster>> clusters)
 		{
 			Frame = frame;
-			Markers = markers;
+			Clusters = clusters;
 			Time = time;
 		}
 	}

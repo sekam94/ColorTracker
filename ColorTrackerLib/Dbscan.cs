@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace ColorTrackerLib
@@ -23,6 +21,7 @@ namespace ColorTrackerLib
 				Point = point;
 				InCluster = false;
 				Scanned = false;
+				Id = id;
 			}
 		}
 
@@ -35,7 +34,7 @@ namespace ColorTrackerLib
 			{
 				foreach (var point2 in list)
 				{
-					if (point1.Distances[point2.Id] == 0)
+					if (point1.Distances[point2.Id] != 0)
 						continue;
 
 					int a = point2.Point.X - point1.Point.X;
@@ -53,6 +52,8 @@ namespace ColorTrackerLib
 		{
 			if (points == null)
 				throw new NullReferenceException();
+
+			epsilon *= epsilon;
 
 			List<Cluster> clusters = new List<Cluster>();
 			List<DbScanPoint> pointList = new List<DbScanPoint>();

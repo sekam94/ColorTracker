@@ -13,7 +13,7 @@ namespace Test
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new ColorTracker());
+			Application.Run(new MainForm());
 		}
 	}
 }

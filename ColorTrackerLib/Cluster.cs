@@ -51,14 +51,9 @@ namespace ColorTrackerLib
 					bottom = point.Y;
 			}
 
-			int width = (right - left) / 2;
-			int height = (top - bottom) / 2;
-			int xPos = left + width / 2;
-			int yPos = bottom + height / 2;
-
-			Borders = new Rectangle(xPos, yPos, width, height);
+			Borders = Rectangle.FromLTRB(left, top, right, bottom);
 			CenterOfMass = new Point(x / Area, y / Area);
-			Center = new Point(xPos, yPos);
+			Center = new Point((left + right)/2, (top + bottom)/2);
 		}
 	};
 }
