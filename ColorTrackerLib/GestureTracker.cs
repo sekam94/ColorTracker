@@ -108,7 +108,7 @@ namespace ColorTrackerLib
 		}
 
 
-		private const double MovementTreshold = 10d;
+		private const double MovementTreshold = 50d;
 		private void UpdatePointer(Pointer pointer, Dictionary<MarkerSettings, List<Cluster>> markers)
 		{
 			var clusterA = GetMarkerCluster(pointer.MarkerASettings, markers);
@@ -137,7 +137,7 @@ namespace ColorTrackerLib
 				else
 				{
 					pointer.IsMoving = false;
-					pointer.Enabled = false;
+					pointer.EmulatorPointer.Enabled = false;
 				}
 		}
 
