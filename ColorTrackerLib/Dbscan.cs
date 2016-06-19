@@ -7,7 +7,7 @@ namespace ColorTrackerLib
 {
 	internal class Dbscan
 	{
-		class DbScanPoint
+		class DbscanPoint
 		{
 			public Point Point { get; private set; }
 			public bool Scanned { get; set; }
@@ -16,7 +16,7 @@ namespace ColorTrackerLib
 			public int Id { get; private set; }
 			public int[] Distances { get; set; }
 
-			public DbScanPoint(Point point, int id)
+			public DbscanPoint(Point point, int id)
 			{
 				Point = point;
 				InCluster = false;
@@ -25,7 +25,7 @@ namespace ColorTrackerLib
 			}
 		}
 
-		private static void CountDistances(List<DbScanPoint> list)
+		private static void CountDistances(List<DbscanPoint> list)
 		{
 			foreach (var point in list)
 				point.Distances = new int[list.Count];
@@ -56,19 +56,19 @@ namespace ColorTrackerLib
 			epsilon *= epsilon;
 
 			List<Cluster> clusters = new List<Cluster>();
-			List<DbScanPoint> pointList = new List<DbScanPoint>();
+			List<DbscanPoint> pointList = new List<DbscanPoint>();
 
 			int id = 0;
 			foreach (Point point in points)
-				pointList.Add(new DbScanPoint(point, id++));
+				pointList.Add(new DbscanPoint(point, id++));
 
 			CountDistances(pointList);
 
-			foreach (DbScanPoint point in pointList)
+			foreach (DbscanPoint point in pointList)
 			{
 				if (point.Scanned == false)
 				{
-					List<DbScanPoint> neighborPts = RegionQuery(point, pointList, epsilon);
+					List<DbscanPoint> neighborPts = RegionQuery(point, pointList, epsilon);
 					point.Scanned = true;
 
 					if (neighborPts.Count >= minPts)
@@ -79,21 +79,21 @@ namespace ColorTrackerLib
 			return clusters;
 		}
 
-		private static List<Point> ExpandCluster(List<DbScanPoint> neighborPts, List<DbScanPoint> pointsList, int minPts, int epsilon)
+		private static List<Point> ExpandCluster(List<DbscanPoint> neighborPts, List<DbscanPoint> pointsList, int minPts, int epsilon)
 		{
-			Queue<DbScanPoint> queue = new Queue<DbScanPoint>(neighborPts);
+			Queue<DbscanPoint> queue = new Queue<DbscanPoint>(neighborPts);
 			List<Point> cluster = new List<Point>();
 
 			while (queue.Count > 0)
 			{
-				DbScanPoint point1 = queue.Dequeue();
+				DbscanPoint point1 = queue.Dequeue();
 
 				if (!point1.Scanned)
 				{
 					point1.Scanned = true;
 					var neighborPts1 = RegionQuery(point1, pointsList, epsilon);
 					if (neighborPts1.Count >= minPts)
-						foreach (DbScanPoint pt in neighborPts1)
+						foreach (DbscanPoint pt in neighborPts1)
 							queue.Enqueue(pt);
 				}
 				if (!point1.InCluster)
@@ -105,17 +105,17 @@ namespace ColorTrackerLib
 			return cluster;
 		}
 
-		private static List<DbScanPoint> RegionQuery(DbScanPoint point, List<DbScanPoint> pointsList, int epsilon)
+		private static List<DbscanPoint> RegionQuery(DbscanPoint point, List<DbscanPoint> pointsList, int epsilon)
 		{
-			List<DbScanPoint> ret = new List<DbScanPoint>();
+			List<DbscanPoint> ret = new List<DbscanPoint>();
 
-			foreach (DbScanPoint otherPoint in pointsList)
+			foreach (DbscanPoint otherPoint in pointsList)
 				if (DistanceSquared(point, otherPoint) <= epsilon)
 					ret.Add(otherPoint);
 			return ret;
 		}
 
-		private static int DistanceSquared(DbScanPoint point1, DbScanPoint point2)
+		private static int DistanceSquared(DbscanPoint point1, DbscanPoint point2)
 		{
 			return point1.Distances[point2.Id];
 		}
