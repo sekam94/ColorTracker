@@ -67,8 +67,7 @@ namespace ColorTrackerLib
 
 							if (hsv.S > settings.MinS &&
 								hsv.S < settings.MaxS &&
-								(difH < settings.MaxDifH ||
-								 difH > 360 - settings.MaxDifH))
+								Math.Min(settings.MaxDifH, 360 - settings.MaxDifH) <= settings.MaxDifH)
 								points[settings].Add(new Point(x * RES_MAGN, y * RES_MAGN));
 						}
 				}
