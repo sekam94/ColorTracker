@@ -6,7 +6,7 @@ namespace ColorTrackerLib
 	/// <summary>
 	/// Use this Classes static methods to initialize and inject touch input.
 	/// </summary>
-	public class TouchInjector
+	public static class TouchInjector
 	{
 		/// <summary>
 		/// Call this first to initialize the TouchInjection!

@@ -41,14 +41,14 @@ namespace Tests
 				emulator.Right.Point = new Point(100, 100);
 
 				emulator.Right.Enabled = true;
-				emulator.Right.Contact = true;
+				emulator.Right.InContact = true;
 				emulator.Update();
 
 				Thread.Sleep(150);
 				emulator.Update();
 				Thread.Sleep(150);
 
-				emulator.Right.Contact = false;
+				emulator.Right.InContact = false;
 				emulator.Right.Enabled = false;
 				emulator.Update();
 

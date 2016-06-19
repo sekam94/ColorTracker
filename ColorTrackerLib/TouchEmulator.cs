@@ -80,7 +80,7 @@ namespace ColorTrackerLib
 			if (state.Pointer.Enabled)
 				state.Injected = true;
 			else if (state.IsInContact)
-				state.Pointer.Contact = false;
+				state.Pointer.InContact = false;
 			else
 				state.Injected = false;
 
@@ -101,8 +101,8 @@ namespace ColorTrackerLib
 
 			var flags = pti.PointerInfo.PointerFlags;
 
-			if (state.Pointer.Contact != state.IsInContact)
-				state.IsInContact = state.Pointer.Contact;
+			if (state.Pointer.InContact != state.IsInContact)
+				state.IsInContact = state.Pointer.InContact;
 
 			if (flags == (PointerFlags.INRANGE | PointerFlags.UP))
 			{
@@ -123,12 +123,12 @@ namespace ColorTrackerLib
 		{
 			PointerFlags flags = PointerFlags.INRANGE;
 
-			if (state.Pointer.Contact != state.IsInContact)
-				flags |= state.Pointer.Contact ? PointerFlags.DOWN : PointerFlags.UP;
+			if (state.Pointer.InContact != state.IsInContact)
+				flags |= state.Pointer.InContact ? PointerFlags.DOWN : PointerFlags.UP;
 			else
 				flags |= PointerFlags.UPDATE;
 
-			if (state.Pointer.Contact)
+			if (state.Pointer.InContact)
 				flags |= PointerFlags.INCONTACT;
 
 			if (!state.Injected)
@@ -168,7 +168,7 @@ namespace ColorTrackerLib
 				}
 			}
 
-			public bool Contact { get; set; }
+			public bool InContact { get; set; }
 			public bool Enabled { get; set; }
 
 			public Pointer()
