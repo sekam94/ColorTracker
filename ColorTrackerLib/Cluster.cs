@@ -12,8 +12,7 @@ namespace ColorTrackerLib
 		public int Area { get; }
 		public Point CenterOfMass { get; }
 		public Point Center { get; }
-		public IList<Point> Points { get { return _points.AsReadOnly(); } } 
-		
+		public IList<Point> Points => _points.AsReadOnly();
 
 		public Cluster(ICollection<Point> points)
 		{
@@ -53,7 +52,7 @@ namespace ColorTrackerLib
 
 			Borders = Rectangle.FromLTRB(left, top, right, bottom);
 			CenterOfMass = new Point(x / Area, y / Area);
-			Center = new Point((left + right)/2, (top + bottom)/2);
+			Center = new Point((left + right) / 2, (top + bottom) / 2);
 		}
 	};
 }

@@ -46,7 +46,7 @@ namespace ColorTrackerLib
 			set
 			{
 				_minS = value;
-				
+
 				if (_minS < 0)
 					_minS = 0;
 

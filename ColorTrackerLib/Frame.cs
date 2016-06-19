@@ -4,8 +4,8 @@ namespace ColorTrackerLib
 {
 	class Frame
 	{
-		public Bitmap Bitmap { get; set; }
-		public double Time { get; private set; }
+		public Bitmap Bitmap { get; }
+		public double Time { get; }
 
 		public Frame(Bitmap bitmap, double time)
 		{

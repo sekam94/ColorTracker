@@ -3,14 +3,13 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Threading;
-using ColorTrackerLib.Device;
 using DirectShowLib;
 
 namespace ColorTrackerLib
 {
 	internal sealed class VideoThread : IDisposable, ISampleGrabberCB
 	{
-		public Camera Device { get; private set; }
+		public Camera Device { get; }
 		public bool Running { get; private set; }
 		public int ImageWidth { get; private set; }
 		public int ImageHeight { get; private set; }
@@ -47,13 +46,13 @@ namespace ColorTrackerLib
 		{
 			if (_filterGraph != null)
 			{
+				Running = false;
+
 				IMediaControl mediaCtrl = _filterGraph as IMediaControl;
 				if (mediaCtrl == null)
 					throw new NullReferenceException();
 				_hr = mediaCtrl.Stop();
 				DsError.ThrowExceptionForHR(_hr);
-
-				Running = false;
 			}
 		}
 
@@ -175,13 +174,13 @@ namespace ColorTrackerLib
 			if (NewFrameCallback != null && !_locked)
 			{
 				NewFrameCallBack buf = NewFrameCallback;
-				
+
 				ThreadPool.QueueUserWorkItem(delegate
 				{
 					_locked = true;
 					buf(new Frame(CreateBitmap(buffer, bufferLen), sampleTime));
 					_locked = false;
-				}); 	
+				});
 			}
 
 			return 0;
@@ -203,5 +202,5 @@ namespace ColorTrackerLib
 		{
 			Dispose();
 		}
-    }
+	}
 }

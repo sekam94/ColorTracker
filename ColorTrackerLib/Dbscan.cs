@@ -9,11 +9,11 @@ namespace ColorTrackerLib
 	{
 		class DbscanPoint
 		{
-			public Point Point { get; private set; }
+			public Point Point { get; }
 			public bool Scanned { get; set; }
 			public bool InCluster { get; set; }
 
-			public int Id { get; private set; }
+			public int Id { get; }
 			public int[] Distances { get; set; }
 
 			public DbscanPoint(Point point, int id)

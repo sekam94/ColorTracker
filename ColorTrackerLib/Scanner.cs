@@ -8,28 +8,13 @@ namespace ColorTrackerLib
 {
 	public sealed class Scanner
 	{
-		public List<MarkerSettings> MarkerSettings { get; }
+		public List<MarkerSettings> MarkerSettings { get; } = new List<MarkerSettings>();
 
 		private const int RES_MAGN = 4; // во сколько раз уменьшать разрешение
 		private const float MIN_S = 0.2f;
 		private const float MIN_V = 0.2f;
 		private const int EPSILON = 20; //окрестность
 		private const int NUM = 10; //количество точек в окрестности
-	
-		internal Scanner()
-		{
-			MarkerSettings = new List<MarkerSettings>();
-		}
-
-		private void DrawDebug(Frame frame, Dictionary<MarkerSettings, List<Point>> points)
-		{
-			frame.Bitmap = new Bitmap(frame.Bitmap);
-			using (var pixels = new ColorTrackerLibCpp.BitmapPixels(frame.Bitmap))
-				foreach (KeyValuePair<MarkerSettings, List<Point>> pair in points)
-					if (pair.Value.Count > 0)
-						foreach (Point point in pair.Value)
-							pixels.SetPixel(point.X, point.Y, Color.Red);
-		}
 
 		internal Dictionary<MarkerSettings, List<Cluster>> LocateMarkers(Frame frame)
 		{

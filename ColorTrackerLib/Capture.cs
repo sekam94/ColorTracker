@@ -2,45 +2,40 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
-using ColorTrackerLib.Device;
 
 namespace ColorTrackerLib
 {
+	public delegate void NewFrameEventHandler(object sender, NewFrameEventArgs e);
+
+	public sealed class NewFrameEventArgs : EventArgs
+	{
+		public Bitmap Frame { get; }
+		public Dictionary<MarkerSettings, List<Cluster>> Clusters { get; }
+		public double Time { get; }
+
+		internal NewFrameEventArgs(Bitmap frame, double time, Dictionary<MarkerSettings, List<Cluster>> clusters)
+		{
+			Frame = frame;
+			Clusters = clusters;
+			Time = time;
+		}
+	}
+
 	public sealed class Capture : IDisposable
 	{
-		public bool Running
-		{
-			get { return _videoThread.Running; }
-		}
+		public bool Running => _videoThread.Running;
+		public int ImageWidth => _videoThread.ImageWidth;
+		public int ImageHeight => _videoThread.ImageHeight;
 
-		public int ImageWidth
-		{
-			get { return _videoThread.ImageWidth; }
-		}
-
-		public int ImageHeight
-		{
-			get { return _videoThread.ImageHeight; }
-		}
-
-		public Scanner Scanner
-		{
-			get { return _scanner; }
-		}
-
-		private Scanner _scanner;
-
-		public delegate void NewFrameEventHandler(object sender, NewFrameEventArgs e);
-
+		public List<MarkerSettings> MarkerSettings => _scanner.MarkerSettings;
 		public NewFrameEventHandler NewFrameEvent;
 
+		private readonly Scanner _scanner = new Scanner();
 		private readonly VideoThread _videoThread;
-
 		private double _lastTime;
 
 		public Capture(Camera camera)
 		{
-			_scanner = new Scanner();
 			_videoThread = new VideoThread(camera);
 			_videoThread.NewFrameCallback = NewFrame;
 		}
@@ -58,7 +53,7 @@ namespace ColorTrackerLib
 		{
 			Frame frame = obj as Frame;
 
-			var fingers = Scanner.LocateMarkers(frame);
+			var fingers = _scanner.LocateMarkers(frame);
 
 			if (frame.Time > _lastTime)
 			{
@@ -82,20 +77,6 @@ namespace ColorTrackerLib
 		public void Dispose()
 		{
 			_videoThread.Dispose();
-		}
-	}
-
-	public sealed class NewFrameEventArgs : EventArgs
-	{
-		public Bitmap Frame { get; private set; }
-		public Dictionary<MarkerSettings, List<Cluster>> Clusters { get; private set; }
-		public double Time { get; private set; }
-
-		internal NewFrameEventArgs(Bitmap frame, double time, Dictionary<MarkerSettings, List<Cluster>> clusters)
-		{
-			Frame = frame;
-			Clusters = clusters;
-			Time = time;
 		}
 	}
 }

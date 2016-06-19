@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gui", "Test\Gui.csproj", "{ACE1CA95-0CDB-4CB8-91D8-4BA104A2525E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gui", "ColorTrackerGui\Gui.csproj", "{ACE1CA95-0CDB-4CB8-91D8-4BA104A2525E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorTrackerLib", "ColorTrackerLib\ColorTrackerLib.csproj", "{23FFDE2B-2CE4-4615-9A46-E8418C9A7A92}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library", "ColorTrackerLib\Library.csproj", "{23FFDE2B-2CE4-4615-9A46-E8418C9A7A92}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ColorTrackerLibCpp", "ColorTrackerLibCpp\ColorTrackerLibCpp.vcxproj", "{84E6F50E-CC40-4CBE-B233-DC4521DF9D5C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LibraryCpp", "ColorTrackerLibCpp\ColorTrackerLibCpp.vcxproj", "{84E6F50E-CC40-4CBE-B233-DC4521DF9D5C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{8BBFC073-FF49-4420-BC36-9C42B37C6D78}"
 EndProject

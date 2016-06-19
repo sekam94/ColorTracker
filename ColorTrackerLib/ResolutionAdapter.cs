@@ -28,14 +28,14 @@ namespace ColorTrackerLib
 			if (_fromZero)
 				return new Point
 				{
-					X = (int) (input.X*_xRatio),
-					Y = (int) (input.Y*_yRatio)
+					X = (int)(input.X * _xRatio),
+					Y = (int)(input.Y * _yRatio)
 				};
 
 			return new Point
 			{
-				X = (int) (_to.X + (input.X - _from.X)*_xRatio),
-				Y = (int) (_to.Y + (input.Y - _from.Y)*_yRatio)
+				X = (int)(_to.X + (input.X - _from.X) * _xRatio),
+				Y = (int)(_to.Y + (input.Y - _from.Y) * _yRatio)
 			};
 		}
 	}

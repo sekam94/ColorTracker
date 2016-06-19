@@ -68,9 +68,9 @@
       <Project>{84e6f50e-cc40-4cbe-b233-dc4521df9d5c}</Project>
       <Name>ColorTrackerLibCpp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ColorTrackerLib\ColorTrackerLib.csproj">
+    <ProjectReference Include="..\ColorTrackerLib\Library.csproj">
       <Project>{23ffde2b-2ce4-4615-9a46-e8418c9a7a92}</Project>
-      <Name>ColorTrackerLib</Name>
+      <Name>Library</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

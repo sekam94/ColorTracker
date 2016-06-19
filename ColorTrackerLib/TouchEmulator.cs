@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace ColorTrackerLib
@@ -31,7 +30,7 @@ namespace ColorTrackerLib
 		{
 			if (Disposed)
 				throw new ObjectDisposedException("TouchEmulator");
-			
+
 			try
 			{
 				UpdateContacts();
@@ -131,7 +130,7 @@ namespace ColorTrackerLib
 
 			if (state.Pointer.Contact)
 				flags |= PointerFlags.INCONTACT;
-			
+
 			if (!state.Injected)
 				flags = PointerFlags.UPDATE;
 

@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices.ComTypes;
 using DirectShowLib;
 
-namespace ColorTrackerLib.Device
+namespace ColorTrackerLib
 {
 	public class Camera
 	{
