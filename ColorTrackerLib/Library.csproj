@@ -54,7 +54,7 @@
     <Compile Include="Capture.cs" />
     <Compile Include="ISmoother.cs" />
     <Compile Include="MarkerSettings.cs" />
-    <Compile Include="PointOperations.cs" />
+    <Compile Include="Operations.cs" />
     <Compile Include="ResolutionAdapter.cs" />
     <Compile Include="Scanner.cs" />
     <Compile Include="Smoother.cs" />

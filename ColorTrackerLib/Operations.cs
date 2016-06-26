@@ -5,9 +5,19 @@ namespace ColorTrackerLib
 {
 	public static class Operations
 	{
+		public static double DistanceTo(this PointF p1, PointF p2)
+		{
+			return Math.Sqrt(Math.Pow(Math.Abs(p1.X - p2.X), 2) + Math.Pow(Math.Abs(p1.Y - p2.Y), 2));
+		}
+
 		public static double DistanceTo(this Point p1, Point p2)
 		{
 			return Math.Sqrt(Math.Pow(Math.Abs(p1.X - p2.X), 2) + Math.Pow(Math.Abs(p1.Y - p2.Y), 2));
+		}
+
+		public static PointF MiddlePoint(this PointF p1, PointF p2)
+		{
+			return new PointF((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
 		}
 
 		public static Point MiddlePoint(this Point p1, Point p2)
@@ -15,14 +25,14 @@ namespace ColorTrackerLib
 			return new Point((p1.X + p2.X) / 2, (p1.Y + p2.Y) / 2);
 		}
 
-		public static double VectorLen(this PointF p1)
+		public static double VectorLen(this Point p1)
 		{
-			return Math.Abs(p1.X * p1.X + p1.Y * p1.Y);
+			return Math.Sqrt(p1.X * p1.X + p1.Y * p1.Y);
 		}
 
-		public static double DistanceTo(this PointF p1, PointF p2)
+		public static double VectorLen(this PointF p1)
 		{
-			return Math.Sqrt(Math.Pow(Math.Abs(p1.X - p2.X), 2) + Math.Pow(Math.Abs(p1.Y - p2.Y), 2));
+			return Math.Sqrt(p1.X * p1.X + p1.Y * p1.Y);
 		}
 
 		public static double DistanceTo(this Cluster clusterA, Cluster clusterB)
@@ -46,10 +56,7 @@ namespace ColorTrackerLib
 		public static double AngleToOX(PointF p1, PointF p2)
 		{
 			var a = new PointF(p1.Y - p2.Y, p2.X - p1.X);
-			var ox = new PointF(1, 0);
-
-			return Math.Acos(	a.X * ox.X + a.Y * ox.Y /
-								a.VectorLen() * ox.VectorLen()	);
+			return Math.Atan2(a.X, a.Y);
 		}
 
 		public static PointF ApproximateBorderPoint(this Cluster cluster, double angle)
