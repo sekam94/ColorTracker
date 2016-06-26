@@ -73,7 +73,7 @@ namespace ColorTrackerGui
 					foreach (var cluster in pair.Value)
 					{
 						g.DrawRectangle(pen, cluster.Borders);
-						g.DrawEllipse(pen, new Rectangle(cluster.Center.X - 5, cluster.Center.Y - 5, 10, 10));
+						g.DrawEllipse(pen, new Rectangle(cluster.CenterOfMass.X - 5, cluster.CenterOfMass.Y - 5, 10, 10));
 
 						//foreach (Point p in cluster.Points)
 						//	g.DrawRectangle(pen, p.X, p.Y, 1, 1);

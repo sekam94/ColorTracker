@@ -107,7 +107,6 @@ namespace ColorTrackerLib
 			_touchEmulator.Dispose();
 		}
 
-
 		private const double MovementTreshold = 50d;
 		private void UpdatePointer(Pointer pointer, Dictionary<MarkerSettings, List<Cluster>> markers)
 		{
@@ -117,13 +116,13 @@ namespace ColorTrackerLib
 			lock (pointer.EmulatorPointer)
 				if (pointer.Enabled && clusterA != null && clusterB != null)
 				{
-					var newPoint = pointer.Smoother.SmoothPoint(_resolutionAdapter.AdaptPoint(clusterA.Center));
+					var newPoint = pointer.Smoother.SmoothPoint(_resolutionAdapter.AdaptPoint(clusterA.CenterOfMass.MiddlePoint(clusterB.CenterOfMass)));
 					var newInContact = ClustersAreClose(clusterA, clusterB);
 					var oldInContact = pointer.EmulatorPointer.InContact;
 
 					if (!pointer.IsMoving &&
 						(!oldInContact || pointer.EmulatorPointer.Point.DistanceTo(newPoint) > MovementTreshold))
-							pointer.IsMoving = true;
+						pointer.IsMoving = true;
 
 					if (pointer.IsMoving)
 						pointer.EmulatorPointer.Point = newPoint;
@@ -158,16 +157,37 @@ namespace ColorTrackerLib
 			return markers.Aggregate((c1, c2) => c1.Area >= c2.Area ? c1 : c2);
 		}
 
-		private const double RectangleScale = 0.1d;
+		//private const double RectangleScale = 0.1d;
+		//private bool ClustersAreClose(Cluster clusterA, Cluster clusterB)
+		//{
+		//	var rectA = clusterA.Borders;
+		//	var rectB = clusterB.Borders;
+
+		//	rectA.Inflate((int)(rectA.Size.Height * RectangleScale), (int)(rectA.Size.Width * RectangleScale));
+		//	rectB.Inflate((int)(rectB.Size.Height * RectangleScale), (int)(rectB.Size.Width * RectangleScale));
+
+		//	return rectA.IntersectsWith(rectB);
+		//}
+
 		private bool ClustersAreClose(Cluster clusterA, Cluster clusterB)
 		{
-			var rectA = clusterA.Borders;
-			var rectB = clusterB.Borders;
+			var centerA = clusterA.Center;
+			var centerB = clusterB.Center;
 
-			rectA.Inflate((int)(rectA.Size.Height * RectangleScale), (int)(rectA.Size.Width * RectangleScale));
-			rectB.Inflate((int)(rectB.Size.Height * RectangleScale), (int)(rectB.Size.Width * RectangleScale));
+			var angle = ((PointF) clusterA.Center).AngleTo(clusterB.Center);
 
-			return rectA.IntersectsWith(rectB);
+			var pointA = clusterA.ApproximateBorderPoint(angle);
+			var pointB = clusterA.ApproximateBorderPoint(angle);
+
+			var minLen = Math.Min(pointA.DistanceTo(centerA), pointB.DistanceTo(centerB));
+
+			return clusterA.DistanceTo(clusterB) < minLen;
 		}
+
+		//private bool ClustersAreClose(Cluster clusterA, Cluster clusterB)
+		//{
+		//	double distance = ((double)clusterA.Area + clusterB.Area) / 2 * 0.1;
+		//	return clusterA.CenterOfMass.DistanceTo(clusterB.CenterOfMass) < distance;
+		//}
 	}
 }
