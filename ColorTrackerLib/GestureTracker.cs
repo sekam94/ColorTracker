@@ -177,11 +177,19 @@ namespace ColorTrackerLib
 			var angle = Operations.AngleToOX(centerA, centerB);
 
 			var pointA = clusterA.ApproximateBorderPoint(angle);
-			var pointB = clusterA.ApproximateBorderPoint(angle);
+			var pointB = clusterB.ApproximateBorderPoint(angle);
 
-			var minLen = Math.Min(pointA.DistanceTo(centerA), pointB.DistanceTo(centerB));
+			var radiusA = pointA.DistanceTo(centerA);
+			var radiusB = pointB.DistanceTo(centerB);
 
-			return clusterA.DistanceTo(clusterB) < minLen;
+
+			double angleA = Operations.AngleToOX(centerA, centerB);
+			double angleB = angleA - Math.PI;
+
+			var minLen = (radiusA + radiusB) * 1.1;
+			var actualLen = pointA.DistanceTo(pointB);
+
+			return actualLen < minLen;
 		}
 
 		//private bool ClustersAreClose(Cluster clusterA, Cluster clusterB)

@@ -35,24 +35,6 @@ namespace ColorTrackerLib
 			return Math.Sqrt(p1.X * p1.X + p1.Y * p1.Y);
 		}
 
-		public static double DistanceTo(this Cluster clusterA, Cluster clusterB)
-		{
-			var rectA = clusterA.Borders;
-			var rectB = clusterB.Borders;
-
-			var centerA = clusterA.Center;
-			var centerB = clusterB.Center;
-
-
-			double angleA = AngleToOX(centerA, centerB);
-			double angleB = angleA - Math.PI;
-
-			var pointA = clusterA.ApproximateBorderPoint(angleA);
-			var pointB = clusterA.ApproximateBorderPoint(angleB);
-
-			return pointA.DistanceTo(pointB);
-		}
-
 		public static double AngleToOX(PointF p1, PointF p2)
 		{
 			var a = new PointF(p1.Y - p2.Y, p2.X - p1.X);
