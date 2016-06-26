@@ -174,7 +174,7 @@ namespace ColorTrackerLib
 			var centerA = clusterA.Center;
 			var centerB = clusterB.Center;
 
-			var angle = ((PointF) clusterA.Center).AngleTo(clusterB.Center);
+			var angle = Operations.AngleToOX(centerA, centerB);
 
 			var pointA = clusterA.ApproximateBorderPoint(angle);
 			var pointB = clusterA.ApproximateBorderPoint(angle);

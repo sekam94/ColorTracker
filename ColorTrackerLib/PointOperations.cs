@@ -34,7 +34,7 @@ namespace ColorTrackerLib
 			var centerB = clusterB.Center;
 
 
-			double angleA = ((PointF) centerA).AngleTo(centerB);
+			double angleA = AngleToOX(centerA, centerB);
 			double angleB = angleA - Math.PI;
 
 			var pointA = clusterA.ApproximateBorderPoint(angleA);
@@ -43,10 +43,13 @@ namespace ColorTrackerLib
 			return pointA.DistanceTo(pointB);
 		}
 
-		public static double AngleTo(this PointF p1, PointF p2)
+		public static double AngleToOX(PointF p1, PointF p2)
 		{
-			return Math.Acos(	p1.X * p2.X + p1.Y * p2.Y /
-								p1.VectorLen() * p2.VectorLen()	);
+			var a = new PointF(p1.Y - p2.Y, p2.X - p1.X);
+			var ox = new PointF(1, 0);
+
+			return Math.Acos(	a.X * ox.X + a.Y * ox.Y /
+								a.VectorLen() * ox.VectorLen()	);
 		}
 
 		public static PointF ApproximateBorderPoint(this Cluster cluster, double angle)
